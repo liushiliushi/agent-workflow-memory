@@ -5,9 +5,17 @@ import numpy as np
 from PIL import Image
 from typing import Union, Optional
 from openai import OpenAI, ChatCompletion
-openai.api_key = os.environ["OPENAI_API_KEY"]
+
+# Initialize OpenAI client
+openai.api_key = os.environ.get("OPENAI_API_KEY", "")
 openai.organization = os.environ.get("OPENAI_ORGANIZATION", "")
 client = OpenAI()
+
+# Initialize OpenRouter client
+openrouter_client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key=os.environ.get("OPENROUTER_API_KEY", ""),
+)
 
 
 class LM_Client:
@@ -73,8 +81,44 @@ class GPT4V_Client:
         return response.choices[0].message.content, response
 
 
+class OpenRouter_Client:
+    """OpenRouter client that directly uses OpenRouter API without langchain."""
+
+    def __init__(self, model_name: str = "google/gemini-2.5-flash-preview-0924") -> None:
+        self.model_name = model_name
+        self.client = openrouter_client
+
+    def chat(self, messages, json_mode: bool = False, **kwargs) -> tuple[str, ChatCompletion]:
+        """
+        Chat with OpenRouter API.
+
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": "hi"},
+        ]
+        """
+        chat_completion = self.client.chat.completions.create(
+            model=self.model_name,
+            messages=messages,
+            temperature=kwargs.get("temperature", 0),
+            **kwargs
+        )
+        response = chat_completion.choices[0].message.content
+        return response, chat_completion
+
+    def one_step_chat(
+        self, text, system_msg: str = None, json_mode=False, **kwargs
+    ) -> tuple[str, ChatCompletion]:
+        messages = []
+        if system_msg is not None:
+            messages.append({"role": "system", "content": system_msg})
+        messages.append({"role": "user", "content": text})
+        return self.chat(messages, json_mode=json_mode, **kwargs)
+
+
 CLIENT_DICT = {
     "gpt-3.5-turbo": LM_Client,
     "gpt-4": LM_Client,
     "gpt-4o": GPT4V_Client,
+    "openrouter": OpenRouter_Client,
 }

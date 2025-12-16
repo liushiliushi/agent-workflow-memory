@@ -176,6 +176,9 @@ def truncate_tokens(text, max_tokens=8000, start=0, model_name="gpt-4"):
 def get_tokenizer(model_name="openai/gpt-4"):
     if model_name.startswith("openai"):
         return tiktoken.encoding_for_model(model_name.split("/")[-1])
+    elif model_name.startswith("google/"):
+        # Use gpt-4 tokenizer as approximation for Google models
+        return tiktoken.encoding_for_model("gpt-4")
     else:
         return AutoTokenizer.from_pretrained(model_name)
 

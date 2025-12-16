@@ -78,6 +78,16 @@ class ChatModelArgs:
                 temperature=self.temperature,
                 max_tokens=self.max_new_tokens,
             )
+        elif self.model_name.startswith("google/"):
+            # Use OpenRouter for Google models
+            import os
+            return ChatOpenAI(
+                model_name=self.model_name,
+                temperature=self.temperature,
+                max_tokens=self.max_new_tokens,
+                openai_api_key=os.environ.get("OPENROUTER_API_KEY"),
+                openai_api_base="https://openrouter.ai/api/v1",
+            )
         else:
             return HuggingFaceChatModel(
                 model_name=self.model_name,

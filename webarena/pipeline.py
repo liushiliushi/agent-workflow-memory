@@ -2,6 +2,10 @@ import os
 import json
 import argparse
 from subprocess import Popen
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 def main():
     # collect examples
@@ -16,6 +20,7 @@ def main():
 
     if args.end_index == None: args.end_index = len(task_ids)
     for tid in task_ids[args.start_index: args.end_index]:
+        print("============================================================")
         # step 1: run inference
         process = Popen([
             "python", "run.py", 
@@ -23,7 +28,6 @@ def main():
             "--workflow_path", f"workflow/{args.website}.txt"
         ])
         process.wait()
-
         # step 2: run evaluation
         process = Popen([
             "python", "-m", "autoeval.evaluate_trajectory",

@@ -5,6 +5,10 @@ WARNING DEPRECATED WILL BE REMOVED SOON
 import os
 import argparse
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 from browsergym.experiments import ExpArgs, EnvArgs
 
@@ -29,7 +33,7 @@ def parse_args():
     parser.add_argument(
         "--model_name",
         type=str,
-        default="openai/gpt-4o",
+        default="google/gemini-2.5-flash-preview-09-2025",
         help="Model name for the chat model.",
     )
     parser.add_argument(
@@ -168,7 +172,16 @@ WARNING this demo agent will soon be moved elsewhere. Expect it to be removed at
     exp_args.prepare(Path("./results"))
     exp_args.run()
 
-    os.rename(exp_args.exp_dir, f"results/{args.task_name}")
+    # Handle directory renaming with potential overwrite
+    import shutil
+    target_dir = f"results/{args.task_name}"
+    
+    # If target directory exists, remove it first
+    if os.path.exists(target_dir):
+        shutil.rmtree(target_dir)
+    
+    # Now rename the experiment directory
+    os.rename(exp_args.exp_dir, target_dir)
 
 
 if __name__ == "__main__":

@@ -93,9 +93,11 @@ def extract_content(text, start_tag):
     return ""
 
 
+from typing import Tuple
+
 def build_text_eval_prompt(
     cap, intent, response, last_actions
-) -> tuple[str, str]:
+) -> Tuple[str, str]:
     system_msg = """You are an expert in evaluating the performance of a web navigation agent. The agent is designed to help a human user navigate a website to complete a task. Given the user's intent, the agent's action history, the final state of the webpage, and the agent's response to the user, your goal is to decide whether the agent's execution is successful or not.
 
 There are three types of tasks:
@@ -126,7 +128,7 @@ Bot response to the user: {response if response else "N/A"}."""
 
 def build_vision_eval_prompt(
     intent, response, last_actions
-) -> tuple[str, str]:
+) -> Tuple[str, str]:
     system_msg = """You are an expert in evaluating the performance of a web navigation agent. The agent is designed to help a human user navigate a website to complete a task. Given the user's intent, the agent's action history, the final state of the webpage, and the agent's response to the user, your goal is to decide whether the agent's execution is successful or not.
 
 There are three types of tasks:

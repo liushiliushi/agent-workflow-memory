@@ -3,3 +3,7 @@
 webarena/config_files/**
 webarena/autoeval/log
 **/.DS_Store
+webarena/batch_logs/*
+webarena/workflow/*
+.vscode/*
+webarena/setup_env.sh
